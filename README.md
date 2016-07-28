@@ -1,11 +1,12 @@
 # blob - a 8-neighbour connected components labelling and contours extractor.
 
+See `blob.h` for a complete documentation.
+
 ## Reference ##
 "A linear-time component-labeling algorithm using contour tracing technique"
  by Fu Chang, Chun-Jen Chen, and Chi-Jen Lu.
 
 ## Build ##
-See `blob.h` for a complete documentation.
 
 A CMake configuration file is provided in order to build a static library and
 the associated documentation.
