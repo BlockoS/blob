@@ -11,7 +11,7 @@ find_package(Doxygen)
 
 set(PROJECT_NAME blob)
 
-file(WRITE ${CMAKE_BINARY_DIR}/blob.c "#define BLOB_IMPLEMENTATION\n#include \"${CMAKE_SOURCE_DIR}/blob.h\"")
+file(WRITE ${CMAKE_BINARY_DIR}/blob.c "#define BLOB_IMPLEMENTATION\n#include \"${CMAKE_CURRENT_SOURCE_DIR}/blob.h\"")
 add_library(blob STATIC ${CMAKE_BINARY_DIR}/blob.c)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wshadow -Wextra -std=gnu11")
 
