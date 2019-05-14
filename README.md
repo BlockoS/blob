@@ -11,8 +11,10 @@ The `test` directory contains the source code of a small program that generates 
 
 #### source
 <img src="test/data/dummy.png" width="320px"/>
+
 #### label
 <img src="test/result/dummy_label.png" width="320px"/> 
+
 #### contours
 <img src="test/result/dummy_plot.png" width="320px"/> 
 
