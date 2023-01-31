@@ -4,7 +4,7 @@
  *     plot "blob.plot" lc variable with lines         
  *
  * Licensed under the MIT License
- * (c) 2016 Vincent Cruz
+ * (c) 2016-2023 Vincent Cruz
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +16,7 @@
 #include "stb_image.h"
 #include "stb_image_write.h"
 
-#include "../blob.h"
+#include <blob.h>
 
 /* Output label buffer as an RGB PNG image */
 void label_write_png(label_t *label, int width, int height, const char *filename)
@@ -182,8 +182,8 @@ void threshold(uint8_t *source, int width, int height, uint8_t v)
 void usage()
 {
     fprintf(stderr, "Usage : label [options] <in> <out>\n"
-            "Create an image containing the set of found labels and a"
-            "json file (blob.json) and GNUplot file (blob.plot)"
+            "Create an image containing the set of found labels and a "
+            "json file (blob.json) and GNUplot file (blob.plot) "
             "containing the associated blobs informations.\n"
             "--roi_x or -x : X coordinate of the upper left corner of ROI (default: 0).\n"
             "--roi_y or -y : Y coordinate of the upper left corner of ROI (default: 0).\n"

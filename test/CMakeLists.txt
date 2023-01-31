@@ -1,9 +1,8 @@
-cmake_minimum_required (VERSION 3.1)
+file(WRITE ${CMAKE_BINARY_DIR}/stb.c "#define STB_IMAGE_IMPLEMENTATION\n#include \"stb_image.h\"\n#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include \"stb_image_write.h\"\n")
+add_library(stb STATIC ${CMAKE_BINARY_DIR}/stb.c)
+target_include_directories(stb PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-project(label)
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wshadow -Wextra -std=gnu11")
-
-include_directories(.)
-add_executable(label label.c blob.c stb_image.c stb_image_write.c)
-target_link_libraries(label m)
+add_executable(label label.c)
+target_link_libraries(label blob stb m)
+target_compile_options(label PRIVATE -Wall -Wshadow -Wextra)

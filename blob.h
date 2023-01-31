@@ -4,7 +4,7 @@
  * =========================================================================
  * v0.0.1
  * Licensed under the MIT License
- * (c) 2016 Vincent Cruz
+ * (c) 2016-2023 Vincent Cruz
  * 
  * About:
  * ------
@@ -195,7 +195,7 @@ void destroy_blobs(blob_t *blobs, int count);
 /* Add a point to contour */
 static int contour_add_point(contour_t *contour, int16_t x, int16_t y)
 {
-    off_t offset = contour->count * 2;
+    long int offset = contour->count * 2;
     if(contour->count == contour->capacity)
     {
         int newCapacity = contour->capacity ? (contour->capacity * 2) : 32;
@@ -314,7 +314,7 @@ static int contour_trace(uint8_t external, label_t current, int16_t x, int16_t y
         {
             const int16_t x1 = x0 + dx[i];
             const int16_t y1 = y0 + dy[i];
-            const off_t offset = x1 + (roi_w * y1);
+            const long int offset = x1 + (roi_w * y1);
             if((x1 < 0) || (x1 >= roi_w)) { continue; }
             if((y1 < 0) || (y1 >= roi_h)) { continue; }
 
