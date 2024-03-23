@@ -10,7 +10,7 @@ project(blob
 file(WRITE ${CMAKE_BINARY_DIR}/blob.c "#define BLOB_IMPLEMENTATION\n#include \"${CMAKE_CURRENT_SOURCE_DIR}/blob.h\"")
 add_library(blob STATIC ${CMAKE_BINARY_DIR}/blob.c blob.h)
 target_include_directories(blob PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}> )
-target_compile_options(blob PRIVATE $<IF:$<C_COMPILER_ID:MSVC>,/W4,-Wall -Wshadow -Wextra>)
+target_compile_options(blob PRIVATE $<IF:$<C_COMPILER_ID:MSVC>,/W4,-Wall -Wshadow -Wextra -Werror>)
 
 if(NOT MSVC)                    # We are being lazy here. We don't build the test program on msvc because of getopt.
     add_subdirectory(test)

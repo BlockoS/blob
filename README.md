@@ -1,13 +1,13 @@
 # blob - a 8-neighbour connected components labelling and contours extractor.
 
-See `blob.h` for a complete documentation.
+See [blob.h](blob.h) for a complete documentation.
 
 ## Reference ##
 "A linear-time component-labeling algorithm using contour tracing technique"
  by Fu Chang, Chun-Jen Chen, and Chi-Jen Lu.
 
 ## Example ##
-The `test` directory contains the source code of a small program that generates an image of the label buffer as long as a JSON file and a GNUplot data file containing the set of extracted contours.
+The [test](test) directory contains the source code of a small program that generates an image of the label buffer as long as a JSON file and a GNUplot data file containing the set of extracted contours.
 
 #### source
 <img src="test/data/dummy.png" width="320px"/>
@@ -35,4 +35,4 @@ On a Linux system, the Makefile will generate a static library `libblob.a`.
 `cmake --build . --target doc` will generate the documentation with [DoxyGen](http://www.stack.nl/~dimitri/doxygen/).
 
 ## License ##
-`blob` is licensed under the MIT License, see LICENSE for more information.
+`blob` is licensed under the MIT License, see the [LICENSE](LICENSE) file for more information.

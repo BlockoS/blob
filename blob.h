@@ -4,7 +4,7 @@
  * =========================================================================
  * v0.0.1
  * Licensed under the MIT License
- * (c) 2016-2023 Vincent Cruz
+ * (c) 2016-2024 Vincent Cruz
  * 
  * About:
  * ------
@@ -283,8 +283,8 @@ static int contour_trace(uint8_t external, label_t current, int16_t x, int16_t y
                          int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
                          uint8_t *in, int16_t line_stride, label_t *label, contour_t *contour)
 {
-    static int16_t dx[8] = { 1, 1, 0,-1,-1,-1, 0, 1 };
-    static int16_t dy[8] = { 0, 1, 1, 1, 0,-1,-1,-1 };
+    static const int16_t dx[8] = { 1, 1, 0,-1,-1,-1, 0, 1 };
+    static const int16_t dy[8] = { 0, 1, 1, 1, 0,-1,-1,-1 };
 
     int i = external ? 7 : 3;
     int j;
@@ -295,11 +295,9 @@ static int contour_trace(uint8_t external, label_t current, int16_t x, int16_t y
     int16_t xx = -1;
     int16_t yy = -1;
 
-    int done = 0;
-
     label[x0 + (roi_w * y0)] = current;
 
-    while(!done)
+    for(int done = 0; !done; )
     {
         if(NULL != contour)
         {
@@ -397,7 +395,7 @@ int find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
     }
 
     /* create label buffer */
-    *label = (label_t*)malloc(roi_w * roi_h * sizeof(label_t));
+    *label = (label_t*)BLOB_MALLOC(roi_w * roi_h * sizeof(label_t));
     if(NULL == label)
     {
         BLOB_ERROR("Out of memory");
