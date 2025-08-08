@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.20)
 
 project(blob 
-    VERSION 0.0.1
+    VERSION 0.1.0
     DESCRIPTION "8-neighbour connected components labelling and contours extractor"
     HOMEPAGE_URL "https://codeberg.org/mooz/blob"
     LANGUAGES C

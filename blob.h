@@ -2,9 +2,9 @@
  * \mainpage
  * blob - 8-neighbour connected components labelling and contours extractor
  * =========================================================================
- * v0.0.1
+ * v0.1.0
  * Licensed under the MIT License
- * (c) 2016-2024 Vincent Cruz
+ * (c) 2016-2025 Vincent Cruz
  * 
  * About
  * ------

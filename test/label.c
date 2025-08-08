@@ -4,7 +4,7 @@
  *     plot "blob.plot" lc variable with lines         
  *
  * Licensed under the MIT License
- * (c) 2016-2023 Vincent Cruz
+ * (c) 2016-2025 Vincent Cruz
  */
 #include <stdio.h>
 #include <stdlib.h>
