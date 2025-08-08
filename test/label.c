@@ -89,6 +89,7 @@ void contour_write_json(contour_t *contour, const char *name, int depth, FILE *o
         }
         fprintf(out, "\n");
     }
+    fprintf(out, "%s],\n", tab);
 }
 
 /* write blobs in a JSON file */
@@ -107,7 +108,6 @@ int blob_write_json(blob_t *blobs, int count, const char *filename)
         fprintf(out, "    {\n");
         fprintf(out, "      \"label\" : %d,\n", blobs[i].label);    
         contour_write_json(&blobs[i].external, "external", 3, out);
-        fprintf(out, ",\n");
         if(NULL != blobs[i].internal)
         {
             int j;

@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  * (c) 2016-2024 Vincent Cruz
  * 
- * About:
+ * About
  * ------
  * This header file provides a function to label and extract the contours
  * of connected components (8-connected) from a region of an image.
@@ -15,7 +15,7 @@
  * "A linear-time component-labeling algorithm using contour tracing technique"
  *  by Fu Chang, Chun-Jen Chen, and Chi-Jen Lu.
  * 
- * Building:
+ * Building
  * ---------
  * Before include this file, add the following line
  ```
@@ -33,13 +33,13 @@
  * dependency to stdio.h). `BLOB_ERROR` can be defined to replace the
  * default behaviour.
  * 
- * Usage:
+ * Usage
  * ------
  ```
- * int find_blobs( int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
- *                 uint8_t *in, int16_t in_w, int16_t in_h, 
- *                 label_t **label, int16_t *label_w, int16_t *label_h, 
- *                 blob_t** blobs, int *count, int extract_internal );
+ * bool find_blobs( int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
+ *                  const uint8_t *in, int16_t in_w, int16_t in_h, 
+ *                  label_t **label, int16_t *label_w, int16_t *label_h, 
+ *                  blob_t** blobs, int *count, bool extract_internal );
  ```
  *  
  * The first 4 parameters `roi_x`, `roi_y`, `roi_w`, `roi_h` defines the
@@ -70,9 +70,9 @@
  * contour points (if any). Otherwise, only the number of internal
  * contours will be set.
  * 
- * `find_blobs` returns 1 upon success or 0 if an error occured.
+ * `find_blobs` returns true upon success or false if an error occured.
  * 
- * Note:
+ * Note
  * -----
  * The memory management is far from being optimal. 
  * This piece of code is not meant to be "production ready".
@@ -82,6 +82,7 @@
 #define BLOB_INCLUDE_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -137,13 +138,13 @@ typedef struct
  * @param [out] label_h Height of the label buffer (ROI clamped to image dimensions).
  * @param [out] blobs   Array of extracted blobs.
  * @param [out] count   Number of extracted blobs.
- * @param [in]  extract_internal  Store internal contours in blob if set to 1.
- * @return 1 upon success or 0 if an error occured.
+ * @param [in]  extract_internal  Store internal contours in blob if set to true.
+ * @return true upon success or false if an error occured.
  */
-int find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
-               uint8_t *in, int16_t in_w, int16_t in_h, 
-               label_t **label, int16_t *label_w, int16_t *label_h, 
-               blob_t** blobs, int *count, int extract_internal);
+bool find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
+                const uint8_t *in, int16_t in_w, int16_t in_h, 
+                label_t **label, int16_t *label_w, int16_t *label_h, 
+                blob_t** blobs, int *count, bool extract_internal);
 
 /**
  * Destroy all blobs created by find_blobs.
@@ -193,7 +194,7 @@ void destroy_blobs(blob_t *blobs, int count);
 #endif
 
 /* Add a point to contour */
-static int contour_add_point(contour_t *contour, int16_t x, int16_t y)
+static bool contour_add_point(contour_t *contour, int16_t x, int16_t y)
 {
     long int offset = contour->count * 2;
     if(contour->count == contour->capacity)
@@ -203,7 +204,7 @@ static int contour_add_point(contour_t *contour, int16_t x, int16_t y)
         if(NULL == tmp)
         {
             BLOB_ERROR("Out of memory");
-            return 0;
+            return false;
         }
         contour->points = tmp;
         contour->capacity = newCapacity;
@@ -213,75 +214,65 @@ static int contour_add_point(contour_t *contour, int16_t x, int16_t y)
     contour->points[offset+1] = y;
     
     contour->count++;
-    return 1;
+    return true;
 }
 
 /* Add a new blob */
-static int blob_add(blob_t **b, int *count)
+static bool blob_add(blob_t **b, int *count)
 {
     blob_t *tmp = (blob_t*)BLOB_REALLOC(*b, (*count+1) * sizeof(blob_t));
     if(NULL == tmp)
     {
         BLOB_ERROR("Out of memory");
-        return 0;
+        return false;
     }
     BLOB_MEMSET(&tmp[*count], 0, sizeof(blob_t));
     *b = tmp;
     *count += 1;
-    return 1;
+    return true;
 }
 
 /* Add internal contour */
-static int blob_add_internal(blob_t *b)
+static bool blob_add_internal(blob_t *b)
 {
     contour_t *tmp = (contour_t*)BLOB_REALLOC(b->internal, (b->internal_count+1) * sizeof(contour_t));
     if(NULL == tmp)
     {
         BLOB_ERROR("Out of memory");
-        return 0;
+        return false;
     }
     BLOB_MEMSET(&tmp[b->internal_count], 0, sizeof(contour_t));
     b->internal = tmp;
     b->internal_count++;
-    return 1;
+    return true;
 }
 
 /* Destroy all blobs created by find_blobs. */
 void destroy_blobs(blob_t *blobs, int count)
 {
-    int i;
-    if(NULL == blobs)
-    {
-        return;
-    }
-    
-    for(i=0; i<count; i++)
-    {
-        if(NULL != blobs[i].external.points)
+    if((blobs == NULL) || (count <= 0)) {
+        BLOB_ERROR("invalid parameters");
+    } else {
+        for(int i=0; i<count; i++)
         {
             BLOB_FREE(blobs[i].external.points);
-        }
-
-        if(NULL != blobs[i].internal)
-        {
-            int j;
-            for(j=0; j<blobs[i].internal_count; j++)
+            if(NULL != blobs[i].internal)
             {
-                if(NULL != blobs[i].internal[j].points)
+                for(int j=0; j<blobs[i].internal_count; j++)
                 {
                     BLOB_FREE(blobs[i].internal[j].points);
                 }
+                BLOB_FREE(blobs[i].internal);
             }
-            BLOB_FREE(blobs[i].internal);
         }
+        BLOB_FREE(blobs);
     }
-    BLOB_FREE(blobs);
 }
 
 /* Extract blob contour (external or internal). */
-static int contour_trace(uint8_t external, label_t current, int16_t x, int16_t y,
-                         int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
-                         uint8_t *in, int16_t line_stride, label_t *label, contour_t *contour)
+static bool contour_trace(uint8_t external, label_t current, int16_t x, int16_t y,
+                          int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
+                          const uint8_t *in, int16_t line_stride, label_t *label, contour_t *contour)
 {
     static const int16_t dx[8] = { 1, 1, 0,-1,-1,-1, 0, 1 };
     static const int16_t dy[8] = { 0, 1, 1, 1, 0,-1,-1,-1 };
@@ -297,14 +288,11 @@ static int contour_trace(uint8_t external, label_t current, int16_t x, int16_t y
 
     label[x0 + (roi_w * y0)] = current;
 
-    for(int done = 0; !done; )
+    for(bool done = false; !done; )
     {
-        if(NULL != contour)
+        if(!contour_add_point(contour, roi_x+x0, roi_y+y0))
         {
-            if(0 == contour_add_point(contour, roi_x+x0, roi_y+y0))
-            {
-                return 0;
-            }
+            return false;
         }
 
         /* Scan around current pixel in clockwise order. */
@@ -335,15 +323,13 @@ static int contour_trace(uint8_t external, label_t current, int16_t x, int16_t y
                 y0 = y1;
                 break;
             }
-            else
-            {
-                label[offset] = -1;
-            }
+
+            label[offset] = -1;
         }
         /* Isolated point. */
         if(8 == j)
         {
-            done = 1;
+            done = true;
         }
         /* Compute next start position. */
         /* 1. Compute the neighbour index of the previous point. */
@@ -352,27 +338,21 @@ static int contour_trace(uint8_t external, label_t current, int16_t x, int16_t y
         i = (previous + 2) & 7;
     }
     
-    return 1;
+    return true;
 }
 
 /* Compute connected components labels and contours. */
-int find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
-               uint8_t    *in,  int16_t     in_w, int16_t     in_h, 
-               label_t **label, int16_t *label_w, int16_t *label_h, 
-               blob_t** blobs, int *count, int extract_internal)
+bool find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
+                const uint8_t *in, int16_t in_w, int16_t in_h, 
+                label_t **label, int16_t *label_w, int16_t *label_h, 
+                blob_t** blobs, int  *count, bool extract_internal)
 {
-    uint8_t *ptr_in, *line_in, *roi_in;
-    label_t *ptr_label;
-
-    int16_t i, j;
-    label_t current;
-
     /* sanity check. */
     if(   (NULL == label) || (NULL == label_w) || (NULL == label_h)
        || (NULL == blobs) || (NULL == count) )
     {
         BLOB_ERROR("One or more invalid arguments");
-        return 0;
+        return false;
     }
 
     *blobs = NULL;
@@ -382,7 +362,7 @@ int find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
     if((roi_x >= in_w) || (roi_y >= in_h))
     {
         /* nothing to do */
-        return 1;
+        return true;
     }
     if(roi_x < 0) { roi_x = 0; }
     if(roi_y < 0) { roi_y = 0; }
@@ -391,7 +371,7 @@ int find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
     if((roi_w <= 0) || (roi_h <= 0))
     {
         /* nothing to do */
-        return 1;
+        return true;
     }
 
     /* create label buffer */
@@ -399,22 +379,23 @@ int find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
     if(NULL == label)
     {
         BLOB_ERROR("Out of memory");
-        return 0;
+        return false;
     }
     *label_w = roi_w;
     *label_h = roi_h;
     
     BLOB_MEMSET(*label, 0, roi_w * roi_h * sizeof(label_t));
     
-    current = 1;
+    label_t current  = 1;
 
-    roi_in = in + roi_x + (in_w * roi_y);
-    line_in = roi_in;
-    ptr_label = *label;
+    const uint8_t *roi_in = in + roi_x + (in_w * roi_y);
+    const uint8_t *line_in = roi_in;
+    label_t *ptr_label = *label;
     
-    for(j=0; j<roi_h; j++, line_in+=in_w)
+    for(int16_t j=0; j<roi_h; j++, line_in+=in_w)
     {
-        for(i=0, ptr_in=line_in; i<roi_w; i++, ptr_in++, ptr_label++)
+        const uint8_t *ptr_in = line_in;
+        for(int16_t i=0; i<roi_w; i++, ptr_in++, ptr_label++)
         {
             if(0 == *ptr_in) { continue; }
             
@@ -427,7 +408,7 @@ int find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
                 /* add new blob */
                 if( !blob_add(blobs, count) )
                 {
-                    return 0;
+                    return false;
                 }
                 (*blobs+(*count-1))->label = current;
                 /* trace external contour */
@@ -446,7 +427,7 @@ int find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
                 {
                     if( !blob_add_internal(current_blob) )
                     {
-                        return 0;
+                        return false;
                     }
                     internal = current_blob->internal + current_blob->internal_count - 1;
                 }
@@ -466,6 +447,6 @@ int find_blobs(int16_t roi_x, int16_t roi_y, int16_t roi_w, int16_t roi_h,
             }
         }
     }
-    return 1;
+    return true;
 }
 #endif /* BLOB_IMPLEMENTATION */
